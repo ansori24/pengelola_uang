@@ -31,6 +31,28 @@ abstract class DB {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
 
-  static Future<List<Map<String, dynamic>>> query(String table) async =>
-      await _db.query(table);
+  static Future<List<Map<String, dynamic>>> query(
+    String table, {
+    bool distinct,
+    List<String> columns,
+    String where,
+    List<dynamic> whereArgs,
+    String groupBy,
+    String having,
+    String orderBy,
+    int limit,
+    int offset,
+  }) async =>
+      await _db.query(
+        table,
+        where: where,
+        whereArgs: whereArgs,
+        columns: columns,
+        distinct: distinct,
+        groupBy: groupBy,
+        having: having,
+        limit: limit,
+        offset: offset,
+        orderBy: orderBy,
+      );
 }
