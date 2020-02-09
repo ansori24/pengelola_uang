@@ -45,4 +45,9 @@ class Transaction implements Model {
 
     return map;
   }
+
+  @override
+  String toString() {
+    return "name : $name, amount $amount, type : $type";
+  }
 }

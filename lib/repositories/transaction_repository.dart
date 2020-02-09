@@ -7,4 +7,10 @@ class TransactionRepository {
 
     return _result.map((item) => Transaction.fromMap(item)).toList();
   }
+
+  static Future<Transaction> insertTransaction(Transaction transaction) async {
+    transaction.id = await DB.insert('transactions', transaction);
+
+    return transaction;
+  }
 }
