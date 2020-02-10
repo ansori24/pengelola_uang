@@ -9,10 +9,10 @@ class AddTransactionPage extends StatefulWidget {
 }
 
 class AddTransactionPageState extends State<AddTransactionPage> {
-  final _formKey = GlobalKey<FormState>();
-  Transaction _transaction = Transaction(type: 'masuk');
+  Transaction transaction = Transaction(type: 'masuk');
   GlobalKey<AutoCompleteTextFieldState<String>> autoCompletekey = GlobalKey();
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController keteranganController = TextEditingController();
+  TextEditingController jumlahController = TextEditingController();
 
   @override
   void initState() {
@@ -42,95 +42,14 @@ class AddTransactionPageState extends State<AddTransactionPage> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, top: 8.0, right: 36.0),
-          child: Column(
-            children: <Widget>[
-              buildTransactionType(),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: AutoCompleteTextField(
-                  controller: textEditingController,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.zero,
-                    icon: Icon(Icons.assignment_turned_in),
-                    hintText: 'ex: makan, jalan-jalan',
-                    labelText: 'Keterangan',
-                    hintStyle: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20.0,
-                  ),
-                  key: autoCompletekey,
-                  suggestions: TransactionRepository.allTransactionNames,
-                  itemBuilder: (BuildContext context, String suggestion) {
-                    return Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(suggestion),
-                        ),
-                      ],
-                    );
-                  },
-                  itemFilter: (String suggestion, String query) {
-                    return suggestion
-                        .toLowerCase()
-                        .startsWith(query.toLowerCase());
-                  },
-                  itemSorter: (String a, String b) {
-                    return a.compareTo(b);
-                  },
-                  itemSubmitted: (String data) {
-                    setState(() {
-                      textEditingController.text = data;
-                    });
-                  },
-                  clearOnSubmit: false,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Jumlah harus diisi';
-                    }
-                  },
-                  onSaved: (value) {
-                    setState(() => _transaction.amount = int.parse(value));
-                  },
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.description),
-                    contentPadding: EdgeInsets.zero,
-                    hintText: 'ex: 20000',
-                    labelText: 'Jumlah',
-                    hintStyle: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    labelStyle: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20.0,
-                  ),
-                ),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16.0, top: 8.0, right: 36.0),
+        child: Column(
+          children: <Widget>[
+            buildTransactionType(),
+            buildTransactionName(),
+            buildTransactionAmount(),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -138,6 +57,82 @@ class AddTransactionPageState extends State<AddTransactionPage> {
         onPressed: () {
           _saveTransaction();
         },
+      ),
+    );
+  }
+
+  var inputStyle = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 20.0,
+  );
+
+  InputDecoration buildInputDecoration({hintText, labelText, icon}) {
+    return InputDecoration(
+      contentPadding: EdgeInsets.zero,
+      icon: icon,
+      hintText: hintText,
+      labelText: labelText,
+      hintStyle: TextStyle(
+        fontWeight: FontWeight.w500,
+      ),
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 16.0,
+      ),
+    );
+  }
+
+  Padding buildTransactionName() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: AutoCompleteTextField(
+        controller: keteranganController,
+        decoration: buildInputDecoration(
+          hintText: 'eg : makan, transport',
+          labelText: 'Keterangan',
+          icon: Icon(Icons.assignment_turned_in),
+        ),
+        key: autoCompletekey,
+        suggestions: TransactionRepository.allTransactionNames,
+        itemBuilder: (BuildContext context, String suggestion) {
+          return Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(suggestion),
+              ),
+            ],
+          );
+        },
+        itemFilter: (String suggestion, String query) {
+          return suggestion.toLowerCase().startsWith(query.toLowerCase());
+        },
+        itemSorter: (String a, String b) {
+          return a.compareTo(b);
+        },
+        itemSubmitted: (String data) {
+          setState(() {
+            keteranganController.text = data;
+          });
+        },
+        clearOnSubmit: false,
+        style: inputStyle,
+      ),
+    );
+  }
+
+  Padding buildTransactionAmount() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: jumlahController,
+        keyboardType: TextInputType.number,
+        decoration: buildInputDecoration(
+          hintText: 'eg : 20000',
+          labelText: 'Jumlah',
+          icon: Icon(Icons.assignment),
+        ),
+        style: inputStyle,
       ),
     );
   }
@@ -150,10 +145,10 @@ class AddTransactionPageState extends State<AddTransactionPage> {
           children: <Widget>[
             Radio(
               value: 'masuk',
-              groupValue: _transaction.type,
+              groupValue: transaction.type,
               onChanged: (value) {
                 setState(() {
-                  _transaction.type = value;
+                  transaction.type = value;
                 });
               },
             ),
@@ -170,10 +165,10 @@ class AddTransactionPageState extends State<AddTransactionPage> {
           children: <Widget>[
             Radio(
               value: 'keluar',
-              groupValue: _transaction.type,
+              groupValue: transaction.type,
               onChanged: (value) {
                 setState(() {
-                  _transaction.type = value;
+                  transaction.type = value;
                 });
               },
             ),
@@ -191,12 +186,9 @@ class AddTransactionPageState extends State<AddTransactionPage> {
   }
 
   void _saveTransaction() {
-    final form = _formKey.currentState;
-    _transaction.name = textEditingController.text;
-    if (form.validate()) {
-      form.save();
-      TransactionRepository.insertTransaction(_transaction);
-      Navigator.of(context).pop();
-    }
+    transaction.name = keteranganController.text;
+    transaction.amount = int.parse(jumlahController.text);
+    TransactionRepository.insertTransaction(transaction);
+    Navigator.of(context).pop();
   }
 }
