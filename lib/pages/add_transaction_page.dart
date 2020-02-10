@@ -1,3 +1,4 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:pengelola_uang/models/transaction.dart';
 import 'package:pengelola_uang/repositories/transaction_repository.dart';
@@ -10,6 +11,18 @@ class AddTransactionPage extends StatefulWidget {
 class AddTransactionPageState extends State<AddTransactionPage> {
   final _formKey = GlobalKey<FormState>();
   Transaction _transaction = Transaction(type: 'masuk');
+  GlobalKey<AutoCompleteTextFieldState<String>> autoCompletekey = GlobalKey();
+  TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    getSuggestions();
+    super.initState();
+  }
+
+  getSuggestions() async {
+    await TransactionRepository.getAllTransactionNames();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,64 +48,11 @@ class AddTransactionPageState extends State<AddTransactionPage> {
           padding: const EdgeInsets.only(left: 16.0, top: 8.0, right: 36.0),
           child: Column(
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Radio(
-                        value: 'masuk',
-                        groupValue: _transaction.type,
-                        onChanged: (value) {
-                          setState(() {
-                            _transaction.type = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        'Masuk',
-                        style: TextStyle(
-                          color: Colors.black.withOpacity(.6),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Radio(
-                        value: 'keluar',
-                        groupValue: _transaction.type,
-                        onChanged: (value) {
-                          setState(() {
-                            _transaction.type = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        'Keluar',
-                        style: TextStyle(
-                          color: Colors.black.withOpacity(.6),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              buildTransactionType(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  autofocus: true,
-                  keyboardType: TextInputType.text,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Keterangan harus diisi';
-                    }
-                  },
-                  onSaved: (value) {
-                    setState(() => _transaction.name = value);
-                  },
+                child: AutoCompleteTextField(
+                  controller: textEditingController,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.zero,
                     icon: Icon(Icons.assignment_turned_in),
@@ -110,6 +70,32 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                     fontWeight: FontWeight.w500,
                     fontSize: 20.0,
                   ),
+                  key: autoCompletekey,
+                  suggestions: TransactionRepository.allTransactionNames,
+                  itemBuilder: (BuildContext context, String suggestion) {
+                    return Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(suggestion),
+                        ),
+                      ],
+                    );
+                  },
+                  itemFilter: (String suggestion, String query) {
+                    return suggestion
+                        .toLowerCase()
+                        .startsWith(query.toLowerCase());
+                  },
+                  itemSorter: (String a, String b) {
+                    return a.compareTo(b);
+                  },
+                  itemSubmitted: (String data) {
+                    setState(() {
+                      textEditingController.text = data;
+                    });
+                  },
+                  clearOnSubmit: false,
                 ),
               ),
               Padding(
@@ -156,8 +142,57 @@ class AddTransactionPageState extends State<AddTransactionPage> {
     );
   }
 
+  Row buildTransactionType() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Radio(
+              value: 'masuk',
+              groupValue: _transaction.type,
+              onChanged: (value) {
+                setState(() {
+                  _transaction.type = value;
+                });
+              },
+            ),
+            Text(
+              'Masuk',
+              style: TextStyle(
+                color: Colors.black.withOpacity(.6),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: <Widget>[
+            Radio(
+              value: 'keluar',
+              groupValue: _transaction.type,
+              onChanged: (value) {
+                setState(() {
+                  _transaction.type = value;
+                });
+              },
+            ),
+            Text(
+              'Keluar',
+              style: TextStyle(
+                color: Colors.black.withOpacity(.6),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   void _saveTransaction() {
     final form = _formKey.currentState;
+    _transaction.name = textEditingController.text;
     if (form.validate()) {
       form.save();
       TransactionRepository.insertTransaction(_transaction);

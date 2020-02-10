@@ -55,4 +55,8 @@ abstract class DB {
         offset: offset,
         orderBy: orderBy,
       );
+
+  static Future<void> truncate(table) async {
+    await _db.delete(table);
+  }
 }

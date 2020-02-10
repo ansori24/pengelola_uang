@@ -23,30 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
         future: TransactionRepository.getAllTransaction(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
-            return ListView.separated(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                Transaction transaction = snapshot.data[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(
-                      transaction.name[0].toUpperCase(),
-                    ),
-                  ),
-                  title: Text(
-                    transaction.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  subtitle: Text('Rp. ${transaction.amount.toString()}'),
-                  onTap: () {},
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) => Divider(
-                height: 0,
-              ),
-            );
+            return buildListView(snapshot);
           } else {
             return Center(
               child: CircularProgressIndicator(),
@@ -66,6 +43,37 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  ListView buildListView(AsyncSnapshot<List> snapshot) {
+    return ListView.separated(
+      itemCount: snapshot.data.length,
+      itemBuilder: (BuildContext context, int index) {
+        Transaction transaction = snapshot.data[index];
+        return buildListTile(transaction);
+      },
+      separatorBuilder: (BuildContext context, int index) => Divider(
+        height: 0,
+      ),
+    );
+  }
+
+  ListTile buildListTile(Transaction transaction) {
+    return ListTile(
+      leading: CircleAvatar(
+        child: Text(
+          transaction.name[0].toUpperCase(),
+        ),
+      ),
+      title: Text(
+        transaction.name,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text('Rp. ${transaction.amount.toString()}'),
+      onTap: () {},
     );
   }
 }
