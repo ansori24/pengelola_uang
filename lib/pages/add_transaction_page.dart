@@ -4,18 +4,22 @@ import 'package:pengelola_uang/models/transaction.dart';
 import 'package:pengelola_uang/repositories/transaction_repository.dart';
 
 class AddTransactionPage extends StatefulWidget {
+  final String type;
+
+  const AddTransactionPage({Key key, this.type}) : super(key: key);
   @override
   AddTransactionPageState createState() => AddTransactionPageState();
 }
 
 class AddTransactionPageState extends State<AddTransactionPage> {
-  Transaction transaction = Transaction(type: 'masuk');
+  Transaction transaction = Transaction();
   GlobalKey<AutoCompleteTextFieldState<String>> autoCompletekey = GlobalKey();
   TextEditingController keteranganController = TextEditingController();
   TextEditingController jumlahController = TextEditingController();
 
   @override
   void initState() {
+    transaction.type = widget.type;
     getSuggestions();
     super.initState();
   }

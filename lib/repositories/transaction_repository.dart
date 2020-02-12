@@ -10,6 +10,26 @@ class TransactionRepository {
     return _result.map((item) => Transaction.fromMap(item)).toList();
   }
 
+  static Future<List<Transaction>> getIncomeTransactions() async {
+    List<Map<String, dynamic>> _result = await DB.query(
+      'transactions',
+      where: "type = 'masuk'",
+      orderBy: "created_at DESC",
+    );
+
+    return _result.map((item) => Transaction.fromMap(item)).toList();
+  }
+
+  static Future<List<Transaction>> getOutcomeTransactions() async {
+    List<Map<String, dynamic>> _result = await DB.query(
+      'transactions',
+      where: "type = 'keluar'",
+      orderBy: "created_at DESC",
+    );
+
+    return _result.map((item) => Transaction.fromMap(item)).toList();
+  }
+
   static Future<void> getAllTransactionNames() async {
     List<Map<String, dynamic>> _result = await DB.query(
       'transactions',
