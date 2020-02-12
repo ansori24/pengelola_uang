@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pengelola_uang/models/transaction.dart';
+import 'package:pengelola_uang/pages/transaction_detail_page.dart';
 import 'package:pengelola_uang/repositories/transaction_repository.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -56,7 +57,16 @@ class TransactionPageState extends State<TransactionPage> {
         ),
       ),
       subtitle: Text('Rp. ${transaction.amount.toString()}'),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => TransactionDetailPage(
+              transaction: transaction,
+            ),
+          ),
+        );
+      },
     );
   }
 }
