@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:pengelola_uang/models/transaction.dart';
 import 'package:pengelola_uang/repositories/transaction_repository.dart';
 
-class AddTransactionPage extends StatefulWidget {
+class TransactionAddPage extends StatefulWidget {
   final String type;
 
-  const AddTransactionPage({Key key, this.type}) : super(key: key);
+  const TransactionAddPage({Key key, this.type}) : super(key: key);
   @override
-  AddTransactionPageState createState() => AddTransactionPageState();
+  TransactionAddPageState createState() => TransactionAddPageState();
 }
 
-class AddTransactionPageState extends State<AddTransactionPage> {
+class TransactionAddPageState extends State<TransactionAddPage> {
   Transaction transaction = Transaction();
   GlobalKey<AutoCompleteTextFieldState<String>> autoCompletekey = GlobalKey();
   TextEditingController keteranganController = TextEditingController();

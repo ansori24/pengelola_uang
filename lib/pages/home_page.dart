@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pengelola_uang/pages/add_transaction_page.dart';
+import 'package:pengelola_uang/pages/transaction_add_page.dart';
 import 'package:pengelola_uang/pages/transaction_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage>
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => AddTransactionPage(type: type),
+            builder: (BuildContext context) => TransactionAddPage(type: type),
           ),
         );
       },
